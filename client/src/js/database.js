@@ -1,21 +1,43 @@
-import { openDB } from 'idb';
+import { openDB } from "idb";
+
+const indexedDB =
+   window.indexedDB ||
+   window.mozIndexedDB ||
+   window.webkitIndexedDB ||
+   window.msIndexedDB ||
+   window.shimIndexedDB;
 
 const initdb = async () =>
-  openDB('jate', 1, {
+  openDB("zach", 1, {
     upgrade(db) {
-      if (db.objectStoreNames.contains('jate')) {
-        console.log('jate database already exists');
+      if (db.objectStoreNames.contains("zach")) {
+        console.log("zach database already exists");
         return;
       }
-      db.createObjectStore('jate', { keyPath: 'id', autoIncrement: true });
-      console.log('jate database created');
+      db.createObjectStore("zach", { keyPath: "id", autoIncrement: true });
+      console.log("zach database created");
     },
   });
 
-// TODO: Add logic to a method that accepts some content and adds it to the database
-export const putDb = async (content) => console.error('putDb not implemented');
 
-// TODO: Add logic for a method that gets all the content from the database
-export const getDb = async () => console.error('getDb not implemented');
+export const putDb = async (content) => {
+  const jateDb = await openDB("zach", 1);
+  const tx = jateDb.transaction("zach", "readwrite");
+  const store = tx.objectStore("zach");
+  const request = store.put({ id: 1, jate: content });
+  const result = await request;
+  console.log(result);
+};
+
+
+export const getDb = async () => {
+  const zachDB = await openDB("zach", 1);
+  const tx = zachDB.transaction("zach", "readonly");
+  const store = tx.objectStore("zach");
+  const request = store.getAll();
+  const result = await request;
+  console.log(result);
+  return result?.value;
+};
 
 initdb();
